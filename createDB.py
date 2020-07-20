@@ -1,3 +1,3 @@
-from serv imoprt db
+from serv import db
 db.create_all()
-from serv import User, Upload
+from serv import Upload
