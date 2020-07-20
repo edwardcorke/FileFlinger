@@ -1,4 +1,12 @@
 {% extends "template.html" %}
 {% block content %}
     <h2>Contents of home page...</h2>
+    <h3>upload file here with form...</h3>
+
+    <form action = "http://localhost:5000/" method = "POST"
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" />
+         <input type = "submit"/>
+      </form>
+
 {% endblock content %}

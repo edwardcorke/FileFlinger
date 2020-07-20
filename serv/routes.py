@@ -1,13 +1,19 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
 from serv import app
 from serv.models import User, Upload
 from serv.forms import ExampleForm
 
 
-@app.route("/")
-@app.route("/home")
-@app.route("/index")
+@app.route("/",  methods=['GET', 'POST'])
+@app.route("/home",  methods=['GET', 'POST'])
+@app.route("/index",  methods=['GET', 'POST'])
+@app.route("/upload",  methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        f = request.files['file']
+        filename = "uploads/" + f.filename
+        f.save(filename)
+        return redirect(url_for('home'))
     return render_template('home.html', title="Home Page")
 
 
