@@ -4,9 +4,9 @@ from serv.models import Upload
 from serv.forms import ExampleForm
 import secrets
 import datetime
-import os
-import shutil
 import pathlib
+import sys
+import os
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -36,11 +36,15 @@ def download(downloadToken):
     if search is None:
         flash("Sorry this is a deadlink")
         return redirect(url_for('home'))
-    # return send_from_directory('uploads/', search.filename) # TODO: wrap in trycatch
 
-    filepath = str(pathlib.Path(__file__).parent.absolute()) + '\\static\\uploads\\'
-    filename = search.hashname
-    return send_file(os.path.join(filepath, filename), attachment_filename=search.filename, as_attachment=True)
+    try:
+        filepath = str(pathlib.Path(__file__).parent.absolute()) + '\\static\\uploads\\'
+        filename = search.hashname
+        return send_file(os.path.join(filepath, filename), attachment_filename=search.filename, as_attachment=True)
+    except:
+        flash("Server issue - our apologies we cannot locate the file")
+        print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
+        return redirect(url_for('home'))
 
 
 # TODO: add status (if available) in db so hashnames aren't reused
