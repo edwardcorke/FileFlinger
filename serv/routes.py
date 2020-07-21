@@ -21,7 +21,7 @@ def home():
         hashname = secrets.token_hex(6)
         while Upload.query.filter_by(hashname=hashname).first() is not None:
             hashname = secrets.token_hex(6)
-        uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(), uploaderEmail="uploader@mail.com")
+        uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(), uploaderEmail=uploadForm.email.data)
         db.session.add(uploadInstance)
         db.session.commit()
         flash("Happy sharing! Here's the link: " "\"localhost:5000/v/" + hashname + "\"", 'success')
