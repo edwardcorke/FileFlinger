@@ -6,6 +6,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'd8f9c93ac18d163fcba715854fea0b41'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['UPLOAD_FOLDER'] = str(pathlib.Path(__file__).parent.absolute()) + '\\static\\uploads\\'
+app.config['EXPIRATION_TIME_DAYS'] = 30
 db = SQLAlchemy(app)
 
 from serv import routes
