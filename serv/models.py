@@ -9,4 +9,4 @@ class Upload(db.Model):
     status = db.Column(db.Integer, default=1, nullable=False)  # 1: available, 0: unavailable
 
     def __repr__(self):
-        return f"Upload('{self.id}', '{self.filename}', '{self.hashname}'), '{self.datetime}'), '{self.uploaderEmail}')"
+        return f"Upload('{self.id}', '{self.filename}', '{self.hashname}', '{self.datetime}', '{self.uploaderEmail}', {self.status})"

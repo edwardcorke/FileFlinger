@@ -45,8 +45,6 @@ def download(downloadToken):
         print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
 
-# TODO: add status (if available) in db so hashnames aren't reused
-
 
 def saveUpload(fileReceived, uploadForm):
     hashname = secrets.token_hex(6)
