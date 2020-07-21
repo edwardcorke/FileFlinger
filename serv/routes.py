@@ -11,22 +11,16 @@ import secrets, datetime, pathlib, sys, os
 @app.route("/upload",  methods=['GET', 'POST'])
 def home():
     uploadForm = UploadFile()
-    if uploadForm.validate_on_submit() and request.method == 'POST':
+    if uploadForm.validate_on_submit():
         fileReceived = request.files['file']
 
         if fileReceived.filename == '':
             flash('No selected file')
             return redirect(url_for('home'))
 
-        hashname = secrets.token_hex(6)
-        while Upload.query.filter_by(hashname=hashname).first() is not None:
-            hashname = secrets.token_hex(6)
-        uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(), uploaderEmail=uploadForm.email.data)
-        db.session.add(uploadInstance)
-        db.session.commit()
+        hashname = saveUpload(fileReceived, uploadForm)
         flash("Happy sharing! Here's the link: " "\"localhost:5000/v/" + hashname + "\"", 'success')
 
-        fileReceived.save("serv\\static\\uploads\\" + hashname)
         return redirect(url_for('home'))
     return render_template('home.html', title="Home Page", form=uploadForm)
 
@@ -38,8 +32,12 @@ def download(downloadToken):
         flash("Sorry this is a deadlink")
         return redirect(url_for('home'))
 
+    if search.status == 0:
+        flash("Sorry this file has expired and is unavailable")
+        return redirect(url_for('home'))
+
     try:
-        filepath = str(pathlib.Path(__file__).parent.absolute()) + '\\static\\uploads\\'
+        filepath = app.config['UPLOAD_FOLDER']
         filename = search.hashname
         return send_file(os.path.join(filepath, filename), attachment_filename=search.filename, as_attachment=True)
     except:
@@ -47,16 +45,16 @@ def download(downloadToken):
         print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
 
-
 # TODO: add status (if available) in db so hashnames aren't reused
 
 
-
-
-# @app.route("/form", methods=['GET', 'POST'])
-# def form():
-#     form = ExampleForm()
-#     if form.validate_on_submit():
-#         flash(f'Submitted Form - flash message for {form.name.data}', 'success')#
-#         return redirect(url_for('home'))
-#     return render_template('formPage.html', title="Example Form Page", form=form)
+def saveUpload(fileReceived, uploadForm):
+    hashname = secrets.token_hex(6)
+    while Upload.query.filter_by(hashname=hashname).first() is not None:
+        hashname = secrets.token_hex(6)
+    uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(),
+                            uploaderEmail=uploadForm.email.data)
+    db.session.add(uploadInstance)
+    db.session.commit()
+    fileReceived.save(app.config['UPLOAD_FOLDER'] + hashname)
+    return hashname
