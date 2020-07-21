@@ -1,9 +1,12 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, send_file
 from serv import app, db
 from serv.models import Upload
 from serv.forms import ExampleForm
 import secrets
 import datetime
+import os
+import shutil
+import pathlib
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -22,11 +25,25 @@ def home():
         db.session.commit()
         flash("Happy sharing! Here's the link: " "\"localhost:5000/v/" + hashname + "\"", 'success')
 
-        f.save("uploads/" + hashname)
+        f.save("serv\\static\\uploads\\" + hashname)
         return redirect(url_for('home'))
     return render_template('home.html', title="Home Page")
 
 
+@app.route('/v/<downloadToken>')
+def download(downloadToken):
+    search = Upload.query.filter_by(hashname=downloadToken).first()
+    if search is None:
+        flash("Sorry this is a deadlink")
+        return redirect(url_for('home'))
+    # return send_from_directory('uploads/', search.filename) # TODO: wrap in trycatch
+
+    filepath = str(pathlib.Path(__file__).parent.absolute()) + '\\static\\uploads\\'
+    filename = search.hashname
+    return send_file(os.path.join(filepath, filename), attachment_filename=search.filename, as_attachment=True)
+
+
+# TODO: add status (if available) in db so hashnames aren't reused
 
 
 
