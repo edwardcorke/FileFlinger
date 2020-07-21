@@ -1,12 +1,8 @@
 from flask import render_template, url_for, flash, redirect, request, send_file
 from serv import app, db
 from serv.models import Upload
-from serv.forms import ExampleForm
-import secrets
-import datetime
-import pathlib
-import sys
-import os
+from serv.forms import UploadFile
+import secrets, datetime, pathlib, sys, os
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -14,20 +10,25 @@ import os
 @app.route("/index",  methods=['GET', 'POST'])
 @app.route("/upload",  methods=['GET', 'POST'])
 def home():
-    if request.method == 'POST':
-        f = request.files['file']
+    uploadForm = UploadFile()
+    if uploadForm.validate_on_submit() and request.method == 'POST':
+        fileReceived = request.files['file']
+
+        if fileReceived.filename == '':
+            flash('No selected file')
+            return redirect(url_for('home'))
 
         hashname = secrets.token_hex(6)
         while Upload.query.filter_by(hashname=hashname).first() is not None:
             hashname = secrets.token_hex(6)
-        uploadInstance = Upload(filename=f.filename, hashname=hashname, datetime=datetime.date.today(), uploaderEmail="uploader@mail.com")
+        uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(), uploaderEmail="uploader@mail.com")
         db.session.add(uploadInstance)
         db.session.commit()
         flash("Happy sharing! Here's the link: " "\"localhost:5000/v/" + hashname + "\"", 'success')
 
-        f.save("serv\\static\\uploads\\" + hashname)
+        fileReceived.save("serv\\static\\uploads\\" + hashname)
         return redirect(url_for('home'))
-    return render_template('home.html', title="Home Page")
+    return render_template('home.html', title="Home Page", form=uploadForm)
 
 
 @app.route('/v/<downloadToken>')

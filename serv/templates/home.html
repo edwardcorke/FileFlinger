@@ -3,10 +3,26 @@
     <h2>Contents of home page...</h2>
     <h3>upload file here with form...</h3>
 
-    <form action = "http://localhost:5000/" method = "POST"
-         enctype = "multipart/form-data">
-         <input type = "file" name = "file" />
-         <input type = "submit"/>
+    <form action = "http://localhost:5000/" method = "POST" enctype = "multipart/form-data">
+        {{ form.hidden_tag() }}
+        <legend class=""border-bottom mb4>Example Form</legend>
+            <div class="form-group">
+                {{ form.email.label }}
+                {% if form.email.errors %}
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+                {% else %}
+                    {{ form.email }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <input type = "file" name = "file" />
+            </div>
+            <div class="form-group">
+                {{ form.submit }}
+            </div>
       </form>
 
 {% endblock content %}
