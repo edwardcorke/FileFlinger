@@ -9,3 +9,7 @@ app.config['UPLOAD_FOLDER'] = str(pathlib.Path(__file__).parent.absolute()) + '\
 db = SQLAlchemy(app)
 
 from serv import routes
+from serv import fileCleanup
+
+
+fileCleanup.runFileCleanup()

@@ -10,3 +10,5 @@ class Upload(db.Model):
 
     def __repr__(self):
         return f"Upload('{self.id}', '{self.filename}', '{self.hashname}', '{self.datetime}', '{self.uploaderEmail}', {self.status})"
+
+# TODO: add message column (and display on page)
