@@ -21,7 +21,7 @@ def home():
         hashname = saveUpload(fileReceived, uploadForm)
         flash("Happy sharing! Here's the link: " "\"localhost:5000/v/" + hashname + "\"", 'success')
 
-        return redirect(url_for('home'))
+        return redirect(url_for('home')) # TODO: deleted forward to thanks page
     return render_template('home.html', title="Home Page", form=uploadForm)
 
 
@@ -44,6 +44,11 @@ def download(downloadToken):
         flash("Server issue - our apologies we cannot locate the file")
         print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
+
+
+@app.route("/thanks")
+def thanks():
+    return 'Thanks for uploading'
 
 
 def saveUpload(fileReceived, uploadForm):

@@ -6,4 +6,4 @@ class UploadFile(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(),
                                     Email()])
-    submit = SubmitField('Submit form')
+    submit = SubmitField('Submit upload')

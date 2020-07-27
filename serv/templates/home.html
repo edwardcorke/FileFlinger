@@ -1,28 +1,56 @@
 {% extends "template.html" %}
 {% block content %}
-    <h2>Contents of home page...</h2>
-    <h3>upload file here with form...</h3>
 
-    <form action = "http://localhost:5000/" method = "POST" enctype = "multipart/form-data">
-        {{ form.hidden_tag() }}
-        <legend class=""border-bottom mb4>Example Form</legend>
-            <div class="form-group">
-                {{ form.email.label }}
-                {% if form.email.errors %}
-                    {{ form.email }}
-                    {% for error in form.email.errors %}
-                        {{ error }}
-                    {% endfor %}
-                {% else %}
-                    {{ form.email }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                <input type = "file" name = "file" />
-            </div>
-            <div class="form-group">
-                {{ form.submit }}
-            </div>
-      </form>
+<!--    <div id="uploadBoxWrapper">-->
+        <div id="uploadBox">
 
+            <form action = "http://localhost:5000/" method = "POST" enctype = "multipart/form-data">
+                {{ form.hidden_tag() }}
+                <!--                    <legend class=""border-bottom mb4>Example Form</legend>-->
+
+                <div class="form-group">
+                    <input type="file" name="file" id="real-file" hidden="hidden" />
+                    <button type="button" id="custom-button" style="">UPLOAD</button>
+                    <br><span id="custom-text"></span>
+                </div>
+
+                <div id="formDetails">
+                        {{ form.email.label }}
+                        {% if form.email.errors %}
+                            {{ form.email }}
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        {% else %}
+                            {{ form.email }}
+                        {% endif %}
+                    <br><br>
+                    [message]
+                    <br><br>
+                        {{ form.submit(id="submitButton") }}
+                </div>
+            </form>
+
+        </div>
+<!--    </div>-->
+
+<script>
+    const realFileBtn = document.getElementById("real-file");
+    const customBtn = document.getElementById("custom-button");
+    const customTxt = document.getElementById("custom-text");
+
+    customBtn.addEventListener("click", function() {
+      realFileBtn.click();
+    });
+
+    realFileBtn.addEventListener("change", function() {
+      if (realFileBtn.value) {
+        customTxt.innerHTML = realFileBtn.value.match(
+          /[\/\\]([\w\d\s\.\-\(\)]+)$/
+        )[1];
+      } else {
+        customTxt.innerHTML = "";
+      }
+    });
+</script>
 {% endblock content %}
