@@ -52,3 +52,7 @@ body {
     border-radius: 15px;
     cursor: pointer;
 }
+
+.inputBox {
+    width: 97%;
+}
