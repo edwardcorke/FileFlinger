@@ -25,7 +25,15 @@
                             {{ form.email }}
                         {% endif %}
                     <br><br>
-                    [message]
+                        {{ form.message.label }}
+                        {% if form.message.errors %}
+                            {{ form.message }}
+                            {% for error in form.message.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        {% else %}
+                            {{ form.message }}
+                        {% endif %}
                     <br><br>
                         {{ form.submit(id="submitButton") }}
                 </div>

@@ -56,7 +56,7 @@ def saveUpload(fileReceived, uploadForm):
     while Upload.query.filter_by(hashname=hashname).first() is not None:
         hashname = secrets.token_hex(6)
     uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(),
-                            uploaderEmail=uploadForm.email.data)
+                            uploaderEmail=uploadForm.email.data, message=uploadForm.message.data)
     db.session.add(uploadInstance)
     db.session.commit()
     fileReceived.save(app.config['UPLOAD_FOLDER'] + hashname)
