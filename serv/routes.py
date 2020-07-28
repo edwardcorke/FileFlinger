@@ -1,8 +1,9 @@
 from flask import render_template, url_for, flash, redirect, request, send_file
-from serv import app, db
+from serv import app, db, key
 from serv.models import Upload
 from serv.forms import UploadFile
-import secrets, datetime, pathlib, sys, os
+from serv.encryptDecrypt import encrypt, decrypt
+import secrets, datetime, sys, os, io
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -39,7 +40,9 @@ def download(downloadToken):
     try:
         filepath = app.config['UPLOAD_FOLDER']
         filename = search.hashname
-        return send_file(os.path.join(filepath, filename), attachment_filename=search.filename, as_attachment=True)
+        fileToSend = open(os.path.join(filepath, filename), "rb")
+        fileToSend = decrypt(fileToSend.read(), key)
+        return send_file(io.BytesIO(fileToSend), attachment_filename=search.filename, as_attachment=True)
     except:
         flash("Server issue - our apologies we cannot locate the file")
         print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
@@ -52,6 +55,9 @@ def thanks():
 
 
 def saveUpload(fileReceived, uploadForm):
+
+    encrypted_data = encrypt(fileReceived.read(), key)
+
     hashname = secrets.token_hex(6)
     while Upload.query.filter_by(hashname=hashname).first() is not None:
         hashname = secrets.token_hex(6)
@@ -59,5 +65,9 @@ def saveUpload(fileReceived, uploadForm):
                             uploaderEmail=uploadForm.email.data, message=uploadForm.message.data)
     db.session.add(uploadInstance)
     db.session.commit()
-    fileReceived.save(app.config['UPLOAD_FOLDER'] + hashname)
+
+    filename = app.config['UPLOAD_FOLDER'] + hashname
+
+    with open(filename, "wb") as file:
+        file.write(encrypted_data)
     return hashname
