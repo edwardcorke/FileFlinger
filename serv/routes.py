@@ -83,7 +83,10 @@ def download(downloadToken):
         return redirect(url_for('home'))
 
 
-
+@app.errorhandler(404)
+def page_not_found(e):
+    #  return render_template('404.html'), 404  # TODO: crete 404.html page
+    return "<h1>404 - Page not found</h1><a href=\"/\">return home</a>"
 
 
 
