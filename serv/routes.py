@@ -18,14 +18,16 @@ def home():
     if uploadForm.validate_on_submit():
         fileReceived = request.files['file']
 
+        # Check if file is blank
         if fileReceived.filename == '':
             flash('No selected file')
             return redirect(url_for('home'))
 
         hashname = saveUpload(fileReceived, uploadForm)
         downloadLink = "v/" + hashname
-        # flash("Happy sharing! Here's the link: " + downloadLink, 'success')
 
+        # Save metadata to session
+        # TODO: create JSON?
         session['downloadLink'] = downloadLink
         session['filename'] = fileReceived.filename
         session['uploader'] = uploadForm.email.data
@@ -37,6 +39,7 @@ def home():
 
 @app.route("/upload/thanks")
 def uploadThanks():
+    # Return to home if metadata has not been transferred over successfully from the upload page
     if 'filename' in session:
         return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'], filesize=size(session['filesize']))  # TODO: add expiration
     print("Could not find session variables")  # TODO: log
@@ -50,22 +53,19 @@ def downloadRedirect(downloadToken):
 
 @app.route("/download/thanks")
 def downloadThanks():
+    # Only show page if download token has been received successfully
     if 'downloadToken' in session:
         downloadLink = "/d/" + session['downloadToken']
 
+        # Query database using hashname
         search = Upload.query.filter_by(hashname=session['downloadToken']).first()
 
-        # filesizeBytes = 0
-        # try:
-        #     filesizeBytes = (os.path.getsize(app.config['UPLOAD_FOLDER'] + search.hashname))
-        # except:
-        #     # could not find file
-        #     pass
-
+        # Cannot find any matches from query
         if search is None:
             flash("Sorry this is a deadlink")
             return redirect(url_for('home'))
 
+        # File flagged unavailable
         if search.status == 0:
             flash("Sorry this file has expired and is unavailable")
             return redirect(url_for('home'))
@@ -78,6 +78,7 @@ def downloadThanks():
 def download(downloadToken):
     search = Upload.query.filter_by(hashname=downloadToken).first()
 
+    # Decrypt file and send to client
     try:
         filepath = app.config['UPLOAD_FOLDER']
         filename = search.hashname
@@ -103,21 +104,29 @@ def saveUpload(fileReceived, uploadForm):
 
     encrypted_data = encrypt(fileReceived.read(), key)
 
+    # Create hasname. Hashnames are used to identify uploads
     hashname = secrets.token_hex(6)
-    while Upload.query.filter_by(hashname=hashname).first() is not None:
+    while Upload.query.filter_by(hashname=hashname).first() is not None:  # Make sure hashname is unique in database
         hashname = secrets.token_hex(6)
 
+    # Find filesize of upload file
     fileReceived.seek(0, os.SEEK_END)
     filesize = fileReceived.tell()
     session['filesize'] = filesize
 
-    uploadInstance = Upload(filename=fileReceived.filename, filesize=filesize, hashname=hashname, datetime=datetime.date.today(),
-                            uploaderEmail=uploadForm.email.data, message=uploadForm.message.data)
+    # Add record to database
+    uploadInstance = Upload(filename=fileReceived.filename,
+                            filesize=filesize,
+                            hashname=hashname,
+                            datetime=datetime.date.today(),
+                            uploaderEmail=uploadForm.email.data,
+                            message=uploadForm.message.data)
     db.session.add(uploadInstance)
     db.session.commit()
 
     filename = app.config['UPLOAD_FOLDER'] + hashname
 
+    # Write encrypted file to directory
     with open(filename, "wb") as file:
         file.write(encrypted_data)
     return hashname
