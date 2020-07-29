@@ -2,6 +2,10 @@ body {
     background-color: #EDEDED;
 }
 
+h1{
+    margin-left: 50px;
+}
+
 #uploadBoxWrapper {
 }
 

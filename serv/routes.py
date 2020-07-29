@@ -1,13 +1,12 @@
-import json
-
 from flask import render_template, url_for, flash, redirect, request, send_file, session
-from werkzeug.exceptions import RequestEntityTooLarge
+ # TODO: from werkzeug.exceptions import RequestEntityTooLarge
 
 from serv import app, db, key
 from serv.models import Upload
 from serv.forms import UploadFile
 from serv.encryptDecrypt import encrypt, decrypt
 import secrets, datetime, sys, os, io
+from hurry.filesize import size, si
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -39,7 +38,7 @@ def home():
 @app.route("/upload/thanks")
 def uploadThanks():
     if 'filename' in session:
-        return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'])  # TODO: add expiration
+        return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'], filesize=size(session['filesize']))  # TODO: add expiration
     print("Could not find session variables")  # TODO: log
     return redirect(url_for('home'))
 
@@ -55,6 +54,14 @@ def downloadThanks():
         downloadLink = "/d/" + session['downloadToken']
 
         search = Upload.query.filter_by(hashname=session['downloadToken']).first()
+
+        # filesizeBytes = 0
+        # try:
+        #     filesizeBytes = (os.path.getsize(app.config['UPLOAD_FOLDER'] + search.hashname))
+        # except:
+        #     # could not find file
+        #     pass
+
         if search is None:
             flash("Sorry this is a deadlink")
             return redirect(url_for('home'))
@@ -63,7 +70,7 @@ def downloadThanks():
             flash("Sorry this file has expired and is unavailable")
             return redirect(url_for('home'))
 
-        return render_template('downloadThanks.html', title="Thanks for downloading", link=downloadLink)
+        return render_template('downloadThanks.html', title="Thanks for downloading", link=downloadLink, filename=search.filename, uploader=search.uploaderEmail, message=search.message, filesize=size(search.filesize))
     return redirect(url_for('home'))
 
 
@@ -99,7 +106,12 @@ def saveUpload(fileReceived, uploadForm):
     hashname = secrets.token_hex(6)
     while Upload.query.filter_by(hashname=hashname).first() is not None:
         hashname = secrets.token_hex(6)
-    uploadInstance = Upload(filename=fileReceived.filename, hashname=hashname, datetime=datetime.date.today(),
+
+    fileReceived.seek(0, os.SEEK_END)
+    filesize = fileReceived.tell()
+    session['filesize'] = filesize
+
+    uploadInstance = Upload(filename=fileReceived.filename, filesize=filesize, hashname=hashname, datetime=datetime.date.today(),
                             uploaderEmail=uploadForm.email.data, message=uploadForm.message.data)
     db.session.add(uploadInstance)
     db.session.commit()
