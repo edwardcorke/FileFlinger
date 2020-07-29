@@ -1,0 +1,9 @@
+{% extends "template.html" %}
+{% block content %}
+    <h1>Thanks for uploading!</h1><br>
+    Link: <a href="../{{ downloadLink }}">localhost:5000/{{ downloadLink }}</a><br>
+    Filename: {{ filename }}<br>
+    Message: {{ message }}<br>
+    Uploader: {{ uploader }}<br>
+<!--    [expires in]-->
+{% endblock content %}

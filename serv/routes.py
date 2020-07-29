@@ -24,11 +24,47 @@ def home():
             return redirect(url_for('home'))
 
         hashname = saveUpload(fileReceived, uploadForm)
-        flash("Happy sharing! Here's the link: " "\"localhost:5000/v/" + hashname + "\"", 'success')
+        downloadLink = "v/" + hashname
+        # flash("Happy sharing! Here's the link: " + downloadLink, 'success')
 
-
-        return redirect(url_for('home')) # TODO: deleted forward to thanks page
+        session['downloadLink'] = downloadLink
+        session['filename'] = fileReceived.filename
+        session['uploader'] = uploadForm.email.data
+        session['message'] = uploadForm.message.data
+        # session['expirationData'] =  # TODO: add expiration
+        return redirect(url_for('uploadThanks'))
     return render_template('home.html', title="Home Page", form=uploadForm)
+
+
+@app.route("/upload/thanks")
+def uploadThanks():
+    if 'filename' in session:
+        return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'])  # TODO: add expiration
+    print("Could not find session variables")  # TODO: log
+    return redirect(url_for('home'))
+
+@app.route("/v/<downloadToken>")
+def downloadRedirect(downloadToken):
+    session['downloadToken'] = downloadToken
+    return redirect(url_for('downloadThanks'))
+
+
+@app.route("/download/thanks")
+def downloadThanks():
+    if 'downloadToken' in session:
+        downloadLink = "/d/" + session['downloadToken']
+
+        search = Upload.query.filter_by(hashname=session['downloadToken']).first()
+        if search is None:
+            flash("Sorry this is a deadlink")
+            return redirect(url_for('home'))
+
+        if search.status == 0:
+            flash("Sorry this file has expired and is unavailable")
+            return redirect(url_for('home'))
+
+        return render_template('downloadThanks.html', title="Thanks for downloading", link=downloadLink)
+    return redirect(url_for('home'))
 
 
 @app.route('/d/<downloadToken>')
@@ -47,28 +83,11 @@ def download(downloadToken):
         return redirect(url_for('home'))
 
 
-@app.route("/v/<downloadToken>")
-def downloadRedirect(downloadToken):
-    session['downloadToken'] = downloadToken
-    return redirect(url_for('thanks'))
 
 
-@app.route("/thanks")
-def thanks():
-    if 'downloadToken' in session:
-        downloadLink = "/d/" + session['downloadToken']
 
-        search = Upload.query.filter_by(hashname=session['downloadToken']).first()
-        if search is None:
-            flash("Sorry this is a deadlink")
-            return redirect(url_for('home'))
 
-        if search.status == 0:
-            flash("Sorry this file has expired and is unavailable")
-            return redirect(url_for('home'))
-
-        return render_template('thanks.html', title="Thanks for downloading", link=downloadLink)
-    return redirect(url_for('home'))
+#####  ADDITIONAL FUNCTIONS  #####
 
 def saveUpload(fileReceived, uploadForm):
 
@@ -87,17 +106,3 @@ def saveUpload(fileReceived, uploadForm):
     with open(filename, "wb") as file:
         file.write(encrypted_data)
     return hashname
-
-
-@app.route("/testA")
-def testA():
-    session['v'] = "zipping variable"
-    return redirect(url_for('testB'))
-
-
-@app.route("/testB")
-def testB():
-    if 'v' in session:
-        return "<h1>Test B Page</h1>" + session['v']
-    return "nope:("
-
