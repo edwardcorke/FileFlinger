@@ -56,3 +56,9 @@ body {
 .inputBox {
     width: 97%;
 }
+
+#messageInputBox {
+    align-items: stretch;
+    height: 100px;
+    max-height: 200px;
+}

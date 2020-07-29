@@ -30,7 +30,7 @@
                                 {{ error }}
                             {% endfor %}
                         {% else %}
-                            {{ form.message(class="inputBox", placeholder="message") }}
+                            {{ form.message(class="inputBox", id="messageInputBox", placeholder="message", contenteditable="true") }}
                         {% endif %}
                     <br><br>
                         {{ form.submit(id="submitButton") }}
