@@ -4,11 +4,27 @@
     <div id="uploadBox">
         <h2>Upload Complete</h2>
         <h3>Here are the details</h3><br>
-        Download here: <br><a href="../{{ downloadLink }}">localhost:5000/{{ downloadLink }}</a><br><br>
+        Download here: <br><a href="../{{ downloadLink }}">
+        <span id="downloadLink">localhost:5000/{{ downloadLink }}</span></a><button onclick="copy2clipboard()">copy to clipboard</button><br><br>
+
         Filename: {{ filename }}<br><br>
         Filesize: {{ filesize }}<br><br>
         Message: {{ message }}<br><br>
         Uploader: {{ uploader }}<br><br>
 <!--        [expires in]-->
+
+
     </div>
+
+<script>
+function copy2clipboard() {
+    var copyText = document.getElementById("downloadLink");
+    var textArea = document.createElement("textarea");
+    textArea.value = copyText.textContent;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("Copy");
+    textArea.remove();
+}
+</script>
 {% endblock content %}
