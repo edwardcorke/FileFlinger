@@ -14,27 +14,31 @@ from hurry.filesize import size, si
 @app.route("/index",  methods=['GET', 'POST'])
 @app.route("/upload",  methods=['GET', 'POST'])
 def home():
-    uploadForm = UploadFile()
-    if uploadForm.validate_on_submit():
-        fileReceived = request.files['file']
+    try:
+        uploadForm = UploadFile()
+        if uploadForm.validate_on_submit():
+            fileReceived = request.files['file']
 
-        # Check if file is blank
-        if fileReceived.filename == '':
-            flash('No selected file')
-            return redirect(url_for('home'))
+            # Check if file is blank
+            if fileReceived.filename == '':
+                flash('No selected file')
+                return redirect(url_for('home'))
 
-        hashname = saveUpload(fileReceived, uploadForm)
-        downloadLink = "v/" + hashname
+            hashname = saveUpload(fileReceived, uploadForm)
+            downloadLink = "v/" + hashname
 
-        # Save metadata to session
-        # TODO: create JSON?
-        session['downloadLink'] = downloadLink
-        session['filename'] = fileReceived.filename
-        session['uploader'] = uploadForm.email.data
-        session['message'] = uploadForm.message.data
-        # session['expirationData'] =  # TODO: add expiration
-        return redirect(url_for('uploadThanks'))
-    return render_template('home.html', title="Home Page", form=uploadForm)
+            # Save metadata to session
+            # TODO: create JSON?
+            session['downloadLink'] = downloadLink
+            session['filename'] = fileReceived.filename
+            session['uploader'] = uploadForm.email.data
+            session['message'] = uploadForm.message.data
+            # session['expirationData'] =  # TODO: add expiration
+            return redirect(url_for('uploadThanks'))
+        return render_template('home.html', title="Home Page", form=uploadForm)
+    except:
+        flash("File received too large- max: 2GB")  # TODO: log
+        return redirect(url_for('home'))
 
 
 @app.route("/upload/thanks")
