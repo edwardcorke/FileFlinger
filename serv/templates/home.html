@@ -35,6 +35,10 @@
                         {{ form.message(class="inputBox", id="messageInputBox", placeholder="message", contenteditable="true") }}
                     {% endif %}
                     <br><br>
+
+                        {{ form.expirationLength }}
+
+                    <br><br>
                         {{ form.submit(id="submitButton") }}
                 </div>
             </form>
@@ -70,13 +74,14 @@
             customTxt.innerHTML = "";
             submitB.disabled = true;
             submitB.style.color = "red";
+            document.getElementById('fileUpload').value = "";
         } else {
             submitB.disabled = false;
             submitB.style.color = "black";
         }
     }
 
-    function checkFileSize(){
+    function checkFileSize() {
         var maxFilesize = 2 * 1024 * 1024 * 1024;
         if (!window.FileReader) {
             console.log("The file API isn't supported on this browser yet.");

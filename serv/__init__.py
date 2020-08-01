@@ -16,4 +16,4 @@ from serv import routes
 from serv import fileCleanup
 
 
-# fileCleanup.runFileCleanup()
+fileCleanup.runFileCleanup()

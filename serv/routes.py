@@ -1,5 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request, send_file, session
  # TODO: from werkzeug.exceptions import RequestEntityTooLarge
+from werkzeug.exceptions import InternalServerError
 
 from serv import app, db, key
 from serv.models import Upload
@@ -16,6 +17,7 @@ from hurry.filesize import size, si
 def home():
     try:
         uploadForm = UploadFile()
+
         if uploadForm.validate_on_submit():
             fileReceived = request.files['file']
 
@@ -24,7 +26,9 @@ def home():
                 flash('No selected file')
                 return redirect(url_for('home'))
 
-            hashname = saveUpload(fileReceived, uploadForm)
+            expirationDatetime = datetime.date.today() + datetime.timedelta(uploadForm.expirationLength.data)
+
+            hashname = saveUpload(fileReceived, uploadForm, expirationDatetime)
             downloadLink = "v/" + hashname
 
             # Save metadata to session
@@ -33,11 +37,12 @@ def home():
             session['filename'] = fileReceived.filename
             session['uploader'] = uploadForm.email.data
             session['message'] = uploadForm.message.data
-            # session['expirationData'] =  # TODO: add expiration
+            session['expirationDatetime'] = expirationDatetime
             return redirect(url_for('uploadThanks'))
         return render_template('home.html', title="Home Page", form=uploadForm)
-    except:
-        flash("File received too large- max: 2GB")  # TODO: log
+    except ():
+        # flash("File received too large- max: 2GB")  # TODO: log
+        flash("Server error")
         return redirect(url_for('home'))
 
 
@@ -45,7 +50,7 @@ def home():
 def uploadThanks():
     # Return to home if metadata has not been transferred over successfully from the upload page
     if 'filename' in session:
-        return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'], filesize=size(session['filesize']))  # TODO: add expiration
+        return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'], filesize=size(session['filesize']), expirationDatetime=session['expirationDatetime'])
     print("Could not find session variables")  # TODO: log
     return redirect(url_for('home'))
 
@@ -101,10 +106,28 @@ def page_not_found(e):
     return "<h1>404 - Page not found</h1><a href=\"/\">return home</a>"
 
 
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    return 'File Too Large', 413
+
+@app.errorhandler(InternalServerError)
+def handle_500(e):
+    original = getattr(e, "original_exception", None)
+
+    if original is None:
+        # direct 500 error, such as abort(500)
+        return render_template("500_unhandled.html"), 500
+
+    # wrapped unhandled error
+    return render_template("500_unhandled.html", e=original), 500
+
+
+
+
 
 #####  ADDITIONAL FUNCTIONS  #####
 
-def saveUpload(fileReceived, uploadForm):
+def saveUpload(fileReceived, uploadForm, expirationDatetime):
 
     encrypted_data = encrypt(fileReceived.read(), key)
 
@@ -123,6 +146,7 @@ def saveUpload(fileReceived, uploadForm):
                             filesize=filesize,
                             hashname=hashname,
                             datetime=datetime.date.today(),
+                            expirationDatetime=expirationDatetime,
                             uploaderEmail=uploadForm.email.data,
                             message=uploadForm.message.data)
     db.session.add(uploadInstance)

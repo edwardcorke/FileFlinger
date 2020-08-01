@@ -4,32 +4,32 @@ from serv.models import Upload
 from sqlalchemy import and_
 
 def runFileCleanup():
+    print("Initiating file cleanup to remove expired uploads")
     x = threading.Thread(target=cleanup_thread_function)
     x.start()
 
 
 def cleanup_thread_function():
     while True:
-        print("Clearing expired files ...")
+        # print("Clearing expired files ...")
 
-        # take current time
-        cutoffDatetime = datetime.date.today() - datetime.timedelta(app.config['EXPIRATION_TIME_DAYS'])
+        # for each available upload:
+        availableUploads = Upload.query.filter(Upload.status == 1).all()
 
-        # find any expired records that are still available
-        expiredUploads = Upload.query.filter(and_(Upload.datetime <= cutoffDatetime, Upload.status == 1)).all()
+        # check if current date is less than or equal to expirationDatetime:
+        for record in availableUploads:
+            if datetime.datetime.today() >= record.expirationDatetime:
+                try:
+                    record.status = 0
+                    db.session.commit()
 
-        # flag records unavailable and delete file with hashname
-        for record in expiredUploads:
-            try:
-                record.status = 0
-                db.session.commit()
-
-                fileToDelete = app.config['UPLOAD_FOLDER'] + record.hashname
-                os.remove(fileToDelete)
-                # TODO: log deletion
-            except:
-                # TODO: log 'could not remove...'
-                pass
-
+                    fileToDelete = app.config['UPLOAD_FOLDER'] + record.hashname
+                    os.remove(fileToDelete)
+                    # TODO: log deletion
+                except:
+                    # TODO: log 'could not remove...'
+                    pass
         # wait
         time.sleep(1800)  # 30minutes (3600 seconds = 1 hour)
+
+
