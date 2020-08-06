@@ -17,6 +17,7 @@ class Upload(db.Model):
     uploaderEmail = db.Column(db.String(320), nullable=False)
     message = db.Column(db.String(512), nullable=False, default="")
     status = db.Column(db.Integer, default=1, nullable=False)  # 1: available, 0: unavailable
+    password = db.Column(db.String(256))
 
     def __repr__(self):
         return f"Upload('{self.id}', '{self.filename}', '{self.hashname}', '{self.datetime}', '{self.expirationDatetime}', '{self.uploaderEmail}', {self.status})"

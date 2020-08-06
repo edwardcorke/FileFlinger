@@ -20,6 +20,7 @@ class UploadFile(FlaskForm):
                                             (5, "5 days"),
                                             (2,"2 days"),
                                             (1,"1 day")],)
+    password = PasswordField('Password', validators=[Length(max=64)])
     submit = SubmitField('Submit upload')
 
 class LoginForm(FlaskForm):

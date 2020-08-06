@@ -36,6 +36,16 @@
                     {% endif %}
                     <br><br>
 
+                    {% if form.password.errors %}
+                        {{ form.password(placeholder="password (optional)") }}
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% else %}
+                        {{ form.password(placeholder="password (optional)") }}
+                    {% endif %}
+                    <br><br>
+
                         {{ form.expirationLength }}
 
                     <br><br>

@@ -38,6 +38,8 @@ def home():
             session['uploader'] = uploadForm.email.data
             session['message'] = uploadForm.message.data
             session['expirationDatetime'] = expirationDatetime
+            # TODO: display password on upload thanks page?
+
             return redirect(url_for('uploadThanks'))
         return render_template('home.html', title="Home Page", form=uploadForm)
     except ():
@@ -53,6 +55,7 @@ def uploadThanks():
         return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'], filesize=size(session['filesize']), expirationDatetime=session['expirationDatetime'])
     print("Could not find session variables")  # TODO: log
     return redirect(url_for('home'))
+
 
 @app.route("/v/<downloadToken>")
 def downloadRedirect(downloadToken):
@@ -200,6 +203,11 @@ def saveUpload(fileReceived, uploadForm, expirationDatetime):
     filesize = fileReceived.tell()
     session['filesize'] = filesize
 
+    # hash password (if required)
+    hashedPassword = ""
+    if uploadForm.password.data is not "":
+        hashedPassword = bcrypt.generate_password_hash(uploadForm.password.data)
+
     # Add record to database
     uploadInstance = Upload(filename=fileReceived.filename,
                             filesize=filesize,
@@ -207,7 +215,8 @@ def saveUpload(fileReceived, uploadForm, expirationDatetime):
                             datetime=datetime.date.today(),
                             expirationDatetime=expirationDatetime,
                             uploaderEmail=uploadForm.email.data,
-                            message=uploadForm.message.data)
+                            message=uploadForm.message.data,
+                            password=hashedPassword)
     db.session.add(uploadInstance)
     db.session.commit()
 
