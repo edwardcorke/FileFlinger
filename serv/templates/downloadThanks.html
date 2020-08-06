@@ -6,8 +6,21 @@
         <h3>Here are the details</h3><br>
         Size: {{ filesize }}<br><br>
         Message: {{ message }}<br><br>
-        Uploader: {{ uploader }}<br><br>
-        <a href='{{ link }}'><button>start download</button></a>
+        Uploader: {{ uploader }}<br><br><br>
+
+        <form action="" method="post">
+        {{ form.hidden_tag() }}
+            {% if form.password.errors %}
+                {{ form.password(placeholder="password if required") }}
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
+            {% else %}
+                {{ form.password(placeholder="password if required") }}
+            {% endif %}
+            <br><br>
+            {{ form.submit(id="submitButton") }}
+        </form>
     <!--        [expires in]-->
     </div>
 

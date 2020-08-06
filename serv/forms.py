@@ -32,3 +32,8 @@ class LoginForm(FlaskForm):
     #     user = User.query.filter_by(email=email.data).first()
     #     if user is None:
     #         raise ValidationError('No user found with that email')
+
+
+class DownloadPasswordForm(FlaskForm):
+    password = PasswordField('Password')
+    submit = SubmitField('start download')

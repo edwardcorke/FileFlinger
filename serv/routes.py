@@ -4,7 +4,7 @@ from werkzeug.exceptions import InternalServerError
 from flask_login import login_user, logout_user, current_user, login_required
 from serv import app, db, key, bcrypt
 from serv.models import Upload, User
-from serv.forms import UploadFile, LoginForm
+from serv.forms import UploadFile, LoginForm, DownloadPasswordForm
 from serv.encryptDecrypt import encrypt, decrypt
 import secrets, datetime, sys, os, io
 from hurry.filesize import size, si
@@ -63,7 +63,7 @@ def downloadRedirect(downloadToken):
     return redirect(url_for('downloadThanks'))
 
 
-@app.route("/download/thanks")
+@app.route("/download/thanks", methods=['GET', 'POST'])
 def downloadThanks():
     # Only show page if download token has been received successfully
     if 'downloadToken' in session:
@@ -82,7 +82,14 @@ def downloadThanks():
             flash("Sorry this file has expired and is unavailable")
             return redirect(url_for('home'))
 
-        return render_template('downloadThanks.html', title="Thanks for downloading", link=downloadLink, filename=search.filename, uploader=search.uploaderEmail, message=search.message, filesize=size(search.filesize))
+        passwordForm = DownloadPasswordForm()
+        if passwordForm.validate_on_submit():
+            # if search.password == "":
+            #     session['download_password'] = ""
+            session['download_password'] = passwordForm.password.data
+            return redirect(downloadLink)
+
+        return render_template('downloadThanks.html', title="Thanks for downloading", form=passwordForm, filename=search.filename, uploader=search.uploaderEmail, message=search.message, filesize=size(search.filesize))
     return redirect(url_for('home'))
 
 
@@ -90,16 +97,26 @@ def downloadThanks():
 def download(downloadToken):
     search = Upload.query.filter_by(hashname=downloadToken).first()
 
+    # if password is required
+    if search.password is not "":
+        if 'download_password' not in session:
+            flash("password required")
+            return redirect(url_for('downloadThanks'))  # TODO: change redirect
+        if not bcrypt.check_password_hash(search.password, session['download_password']):
+           flash("Incorrect password")
+           return redirect(url_for('downloadThanks'))  # TODO: change redirect
+
     # Decrypt file and send to client
     try:
-        filepath = app.config['UPLOAD_FOLDER']
-        filename = search.hashname
-        fileToSend = open(os.path.join(filepath, filename), "rb")
-        fileToSend = decrypt(fileToSend.read(), key)
-        return send_file(io.BytesIO(fileToSend), attachment_filename=search.filename, as_attachment=True)
+       filepath = app.config['UPLOAD_FOLDER']
+       filename = search.hashname
+       fileToSend = open(os.path.join(filepath, filename), "rb")
+       fileToSend = decrypt(fileToSend.read(), key)
+       return send_file(io.BytesIO(fileToSend), attachment_filename=search.filename, as_attachment=True)
     except:
         flash("Server issue - our apologies we cannot locate the file")
-        print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
+        print("Error: " + str(sys.exc_info()[
+                                 0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
 
 
