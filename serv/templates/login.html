@@ -2,30 +2,32 @@
 {% block content %}
 
     <h2>Login</h2>
-    <form action = "" method = "POST">
-        {{ form.hidden_tag() }}
+    <div id="loginForm">
+        <form action = "" method = "POST">
+            {{ form.hidden_tag() }}
 
-        {{ form.email.label }}
-        {% if form.email.errors %}
-            {{ form.email(class="form-control form-control-lg is-invalid") }}
-                {% for error in form.email.errors %}
-                    {{ error }}
-                {% endfor %}
-        {% else %}
-            {{ form.email(class="form-control form-control-lg") }}
-        {% endif %}
-        <br><br>
-        {{ form.password.label }}
-        {% if form.password.errors %}
-            {{ form.password(class="form-control form-control-lg is-invalid") }}
-                {% for error in form.password.errors %}
-                    {{ error }}
-                {% endfor %}
-        {% else %}
-            {{ form.password(class="form-control form-control-lg") }}
-        {% endif %}
-        <br><br>
-        {{ form.submit }}
-    </form>
+            {{ form.email.label }}
+            {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+            {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+            {% endif %}
+            <br><br>
+            {{ form.password.label }}
+            {% if form.password.errors %}
+                {{ form.password(class="form-control form-control-lg is-invalid") }}
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+            {% else %}
+                {{ form.password(class="form-control form-control-lg") }}
+            {% endif %}
+            <br><br>
+            {{ form.submit }}
+        </form>
+    </div>
 
 {% endblock content %}
