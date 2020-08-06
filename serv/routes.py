@@ -82,14 +82,22 @@ def downloadThanks():
             flash("Sorry this file has expired and is unavailable")
             return redirect(url_for('home'))
 
+        passwordRequired = False
+        if search.password is not "":
+            passwordRequired = True
         passwordForm = DownloadPasswordForm()
         if passwordForm.validate_on_submit():
-            # if search.password == "":
-            #     session['download_password'] = ""
             session['download_password'] = passwordForm.password.data
             return redirect(downloadLink)
 
-        return render_template('downloadThanks.html', title="Thanks for downloading", form=passwordForm, filename=search.filename, uploader=search.uploaderEmail, message=search.message, filesize=size(search.filesize))
+        return render_template('downloadThanks.html',
+                               title="Thanks for downloading",
+                               form=passwordForm,
+                               passwordRequired=passwordRequired,
+                               filename=search.filename,
+                               uploader=search.uploaderEmail,
+                               message=search.message,
+                               filesize=size(search.filesize))
     return redirect(url_for('home'))
 
 
