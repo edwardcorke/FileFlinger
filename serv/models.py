@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(256), nullable=False)  # TODO: verify?
     password = db.Column(db.String(256), nullable=False)
     # salt = db.Column(db.String(64), nullable=False)
-    userlevel = db.Column(db.Integer, nullable=False, default=1)
+    permLevel = db.Column(db.Integer, nullable=False, default=1)
 
     def __repr__(self):
-        return f"User('{self.id}', '{self.username}', '{self.email}', '{self.userlevel}')"
+        return f"User('{self.id}', '{self.username}', '{self.email}', '{self.permLevel}')"

@@ -1,0 +1,21 @@
+{% extends "template.html" %}
+{% block content %}
+
+    <h2>View all users</h2><br><br>
+    Users:<br><br>
+        <table>
+            <th>ID</th>
+            <th>username</th>
+            <th>email</th>
+            <th>permission level</th>
+            {% for item in data %}
+            <tr>
+                <td>{{item[0]}}</td>
+                <td>{{item[1]}}</td>
+                <td>{{item[2]}}</td>
+                <td>{{item[3]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+{% endblock content %}

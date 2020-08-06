@@ -128,7 +128,35 @@ def logout():
 @app.route('/admin_portal')
 @login_required
 def admin_portal():
-    return render_template('admin_portal.html')
+    if current_user.permLevel >= 2:  # TODO: change number to config alias
+        data = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
+        datab = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
+        return render_template('admin_portal.html', data=data, datab=datab)
+    else:
+        flash("Access to the admin portal is restricted")
+        return redirect(url_for('home'))\
+               
+               
+@app.route('/admin_portal/users')
+@login_required
+def view_users():
+    if current_user.permLevel >= 2:  # TODO: change number to config alias
+        userData = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
+        return render_template('view_users.html', data=userData)
+    else:
+        flash("Access to the admin portal area is restricted")
+        return redirect(url_for('home'))\
+
+
+@app.route('/admin_portal/uploads')
+@login_required
+def view_uploads():
+    if current_user.permLevel >= 2:  # TODO: change number to config alias
+        userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
+        return render_template('view_uploads.html', data=userData)
+    else:
+        flash("Access to the admin portal area is restricted")
+        return redirect(url_for('home'))
 
 
 @app.errorhandler(404)
