@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Length, Email
+from wtforms import StringField, SubmitField, SelectField, PasswordField
+from wtforms.validators import DataRequired, Length, Email, ValidationError
+from serv import db, models
+from serv.models import User
+
 
 class UploadFile(FlaskForm):
     email = StringField('Email',
@@ -18,3 +21,13 @@ class UploadFile(FlaskForm):
                                             (2,"2 days"),
                                             (1,"1 day")],)
     submit = SubmitField('Submit upload')
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password')
+    submit = SubmitField('Login')
+
+    # def search_user_by_email(self, email):
+    #     user = User.query.filter_by(email=email.data).first()
+    #     if user is None:
+    #         raise ValidationError('No user found with that email')

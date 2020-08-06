@@ -1,10 +1,10 @@
-from flask import render_template, url_for, flash, redirect, request, send_file, session
+from flask import render_template, url_for, flash, redirect, request, send_file, session, request
  # TODO: from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.exceptions import InternalServerError
-
-from serv import app, db, key
-from serv.models import Upload
-from serv.forms import UploadFile
+from flask_login import login_user, logout_user, current_user, login_required
+from serv import app, db, key, bcrypt
+from serv.models import Upload, User
+from serv.forms import UploadFile, LoginForm
 from serv.encryptDecrypt import encrypt, decrypt
 import secrets, datetime, sys, os, io
 from hurry.filesize import size, si
@@ -98,6 +98,37 @@ def download(downloadToken):
         flash("Server issue - our apologies we cannot locate the file")
         print("Error: " + str(sys.exc_info()[0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Make sure login page can only be accessed when the user is not logged in
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=True)  # TODO: add field to form?
+            next_page = request.args.get('next')
+            flash('Logged in')
+            return redirect(next_page) if next_page else redirect(url_for('home'))
+        else:
+            flash('Login unsuccessful, Please check email and password')
+    return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('Logged out')
+    return redirect(url_for('home'))
+
+
+@app.route('/admin_portal')
+@login_required
+def admin_portal():
+    return render_template('admin_portal.html')
 
 
 @app.errorhandler(404)
