@@ -25,7 +25,7 @@ class Upload(db.Model):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(256), nullable=False)  # TODO: unique?
+    username = db.Column(db.String(256), nullable=False, unique=True)
     email = db.Column(db.String(256), nullable=False)  # TODO: verify?
     password = db.Column(db.String(256), nullable=False)
     # salt = db.Column(db.String(64), nullable=False)  # TODO: add salt?

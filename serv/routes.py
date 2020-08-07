@@ -129,6 +129,9 @@ def download(downloadToken):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     registerForm = RegisterForm()
     if registerForm.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(registerForm.password.data)  # TODO: UTF-8 needed?
