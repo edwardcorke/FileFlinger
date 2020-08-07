@@ -1,0 +1,22 @@
+{% extends "template.html" %}
+{% block content %}
+
+    <h2>User: [...]</h2><br>
+
+    Users:<br><br>
+        <table>
+            <th>ID</th>
+            <th>username</th>
+            <th>email</th>
+            <th>permission level</th>
+            {% for item in userData %}
+            <tr>
+                <td>{{item[0]}}</td>
+                <td>{{item[1]}}</td>
+                <td>{{item[2]}}</td>
+                <td>{{item[3]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+{% endblock content %}

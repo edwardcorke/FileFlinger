@@ -127,6 +127,7 @@ def download(downloadToken):
                                  0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -141,6 +142,7 @@ def register():
         flash("New user created", 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title="Register", form=registerForm)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -170,35 +172,51 @@ def logout():
 @app.route('/admin_portal')
 @login_required
 def admin_portal():
-    if current_user.permLevel >= 2:  # TODO: change number to config alias
-        data = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
-        datab = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
-        return render_template('admin_portal.html', data=data, datab=datab)
-    else:
-        flash("Access to the admin portal is restricted")
-        return redirect(url_for('home'))\
+    if current_user.permLevel < 2:  # TODO: change number to config alias
+        flash("Access to the admin portal area is restricted")
+        return redirect(url_for('home'))
+
+    data = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
+    datab = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
+    return render_template('admin_portal.html', data=data, datab=datab)
+
                
                
 @app.route('/admin_portal/users')
 @login_required
 def view_users():
-    if current_user.permLevel >= 2:  # TODO: change number to config alias
-        userData = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
-        return render_template('view_users.html', data=userData)
-    else:
+    if current_user.permLevel < 2:  # TODO: change number to config alias
         flash("Access to the admin portal area is restricted")
-        return redirect(url_for('home'))\
+        return redirect(url_for('home'))
+
+    userData = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
+    return render_template('view_users.html', data=userData)
 
 
 @app.route('/admin_portal/uploads')
 @login_required
 def view_uploads():
-    if current_user.permLevel >= 2:  # TODO: change number to config alias
-        userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
-        return render_template('view_uploads.html', data=userData)
-    else:
+    if current_user.permLevel < 2:  # TODO: change number to config alias
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
+
+    userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
+    return render_template('view_uploads.html', data=userData)
+
+
+@app.route('/admin_portal/users/<userID>')
+@login_required
+def view_user_account(userID):
+    if current_user.permLevel < 2:  # TODO: change number to config alias
+        flash("Access to the admin portal area is restricted")
+        return redirect(url_for('home'))
+
+    user = db.session.execute("SELECT id, username, email, permLevel FROM User WHERE id = " + userID).fetchall()
+    if user == []:
+        flash("No user with ID: " + userID)
+        return redirect(url_for('view_users'))
+
+    return render_template('view_user_account.html', title="User Page...", userData=user)
 
 
 @app.errorhandler(404)
