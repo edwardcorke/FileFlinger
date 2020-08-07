@@ -180,8 +180,7 @@ def admin_portal():
     datab = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
     return render_template('admin_portal.html', data=data, datab=datab)
 
-               
-               
+
 @app.route('/admin_portal/users')
 @login_required
 def view_users():
@@ -211,12 +210,20 @@ def view_user_account(userID):
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
-    user = db.session.execute("SELECT id, username, email, permLevel FROM User WHERE id = " + userID).fetchall()
-    if user == []:
+    status = request.args.get('status')
+    upload_id = request.args.get('upload_id')
+    if status:
+        db.session.execute("UPDATE Upload SET status = " + status + " WHERE id = " + upload_id)
+        db.session.commit()
+
+    user = db.session.execute("SELECT id, username, email, permLevel FROM User WHERE id = " + userID).fetchone()
+
+    if user is None:
         flash("No user with ID: " + userID)
         return redirect(url_for('view_users'))
 
-    return render_template('view_user_account.html', title="User Page...", userData=user)
+    uploads = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, message, status FROM Upload WHERE uploaderEmail = \"" + user[2] + "\"")
+    return render_template('view_user_account.html', title="User Page...", userData=user, uploads=uploads)
 
 
 @app.errorhandler(404)
