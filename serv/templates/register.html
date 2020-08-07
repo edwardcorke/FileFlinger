@@ -28,18 +28,64 @@
             {% endif %}
             <br><br>
 
-            {{ form.password.label }}
-            {% if form.password.errors %}
-                {{ form.password }}
-                    {% for error in form.password.errors %}
-                        {{ error }}
-                    {% endfor %}
-            {% else %}
-                {{ form.password }}
-            {% endif %}
+<!--            {{ form.password.label }}-->
+<!--            {% if form.password.errors %}-->
+<!--                {{ form.password(id=password) }}-->
+<!--                    {% for error in form.password.errors %}-->
+<!--                        {{ error }}-->
+<!--                    {% endfor %}-->
+<!--            {% else %}-->
+<!--                {{ form.password(id=password) }}-->
+<!--            {% endif %}-->
+                <p>
+        {{ form.password.label }}:
+        {{ form.password }}
+    </p>
+
+            <meter max="4" id="password_evaluator" style=""></meter>
+            <p id="password_evaluation_text"></p>
+
             <br><br>
 
             {{ form.submit }}
         </form>
+
+
+
+        <script type="text/javascript" src="{{ url_for('static', filename='zxcvbn.js') }}"></script>
+
+        <script>
+        //define list of messages that will be displayed to users
+        var strength = {
+            0: "Really Bad!",
+            1: "Bad",
+            2: "Still Weak",
+            3: "Good",
+            4: "Strong!"
+        }
+        //extract the password element
+        var pass = document.getElementById("password");
+        //extract the meter so that it can be modifield later
+        var meter = document.getElementById("password_evaluator")
+        //the actualy text element that will display information
+        var dialogue = document.getElementById("password_evaluation_text")
+
+        pass.addEventListener('input', function () {
+            //use Dropbox's library to get a strength score
+            var val = password.value;
+            var result = zxcvbn(val);
+
+            meter.value = result.score;
+
+            if (val !== "") {
+                dialogue.innerHTML = "Strength: " + "<strong>" + strength[result.score] + ":</strong>" + "<span class='feedback'>" + result.feedback.warning + " " + result.feedback.suggestions + " Would take: " + result.guesses + " guesses to crack." + "</span";
+            } else {
+                dialogue.innerHTML = "";
+            }
+        });
+
+    </script>
+
+
 
 {% endblock content %}
