@@ -223,12 +223,27 @@ def view_user_account(userID):
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
-    # Changing availability status
+    # Updating availability status
     status = request.args.get('status')
     upload_id = request.args.get('upload_id')
     if status:
         db.session.execute("UPDATE Upload SET status = " + status + " WHERE id = " + upload_id)
         db.session.commit()
+
+    # Updating permission level of an account
+    permLevel = request.args.get('permLevel')
+    if permLevel:
+        permLevel = int(permLevel)
+        if str(current_user.id) == userID:
+            flash("You cannot change your own permission level")
+        elif permLevel > int(current_user.permLevel):
+            flash("Cannot raise a user's permission level higher that yourself")
+        elif permLevel <= 0:
+            flash("Invalid permission level")
+        else:
+            db.session.execute("UPDATE User SET permLevel = " + str(permLevel) + " WHERE id = " + userID)
+            db.session.commit()
+
 
     # Selecting user details
     user = db.session.execute("SELECT id, username, email, permLevel FROM User WHERE id = " + userID).fetchone()
