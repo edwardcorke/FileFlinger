@@ -199,8 +199,15 @@ def view_uploads():
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
+    # Find data if email searched
+    email = request.args.get("email")
+    search = []
+    if email:
+        print(email)
+        search = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, message, status FROM Upload WHERE uploaderEmail = \"" + email + "\"").fetchall()
+
     userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
-    return render_template('view_uploads.html', data=userData)
+    return render_template('view_uploads.html', data=userData, search=search)
 
 
 @app.route('/admin_portal/users/<userID>')
@@ -210,18 +217,21 @@ def view_user_account(userID):
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
+    # Changing availability status
     status = request.args.get('status')
     upload_id = request.args.get('upload_id')
     if status:
         db.session.execute("UPDATE Upload SET status = " + status + " WHERE id = " + upload_id)
         db.session.commit()
 
+    # Selecting user details
     user = db.session.execute("SELECT id, username, email, permLevel FROM User WHERE id = " + userID).fetchone()
 
     if user is None:
         flash("No user with ID: " + userID)
         return redirect(url_for('view_users'))
 
+    # Searching for any uploads by the user
     uploads = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, message, status FROM Upload WHERE uploaderEmail = \"" + user[2] + "\"")
     return render_template('view_user_account.html', title="User Page...", userData=user, uploads=uploads)
 
