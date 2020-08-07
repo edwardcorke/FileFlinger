@@ -203,8 +203,14 @@ def view_uploads():
     email = request.args.get("email")
     search = []
     if email:
-        print(email)
         search = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, message, status FROM Upload WHERE uploaderEmail = \"" + email + "\"").fetchall()
+
+    # Changing availability status
+    status = request.args.get('status')
+    upload_id = request.args.get('upload_id')
+    if status:
+        db.session.execute("UPDATE Upload SET status = " + status + " WHERE id = " + upload_id)
+        db.session.commit()
 
     userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
     return render_template('view_uploads.html', data=userData, search=search)

@@ -32,10 +32,10 @@
                 <td>
                     {% if item[7] == 0 %}
                         unavailable:
-<!--                        <a href="{{search[0]}}?status=1&upload_id={{item[0]}}"><button>make available</button></a>-->
+                        <a href="uploads?status=1&upload_id={{item[0]}}"><button>make available</button></a>
                     {% else %}
                         available:
-<!--                        <a href="{{search[0]}}?status=0&upload_id={{item[0]}}"><button>make unavailable</button></a>-->
+                        <a href="uploads?status=0&upload_id={{item[0]}}"><button>make unavailable</button></a>
                     {% endif %}
                 </td>
             </tr>
@@ -64,7 +64,17 @@
             <td>{{item[5]}}</td>
             <td>{{item[6]}}</td>
             <td>{{item[7]}}</td>
-            <td>{{item[8]}}</td>
+
+            <td>
+                {% if item[8] == 0 %}
+                    unavailable:
+                    <a href="uploads?status=1&upload_id={{item[0]}}"><button>make available</button></a>
+                {% else %}
+                    available:
+                    <a href="uploads?status=0&upload_id={{item[0]}}"><button>make unavailable</button></a>
+                {% endif %}
+            </td>
+
         </tr>
         {% endfor %}
     </table>
