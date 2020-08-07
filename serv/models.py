@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(256), nullable=False)  # TODO: unique?
     email = db.Column(db.String(256), nullable=False)  # TODO: verify?
     password = db.Column(db.String(256), nullable=False)
-    # salt = db.Column(db.String(64), nullable=False)
+    # salt = db.Column(db.String(64), nullable=False)  # TODO: add salt?
     permLevel = db.Column(db.Integer, nullable=False, default=1)
 
     def __repr__(self):

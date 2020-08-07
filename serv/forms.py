@@ -23,6 +23,15 @@ class UploadFile(FlaskForm):
     password = PasswordField('Password', validators=[Length(max=64)])
     submit = SubmitField('Submit upload')
 
+
+class RegisterForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    username = StringField('Username', validators=[DataRequired(), Length(max=256)])
+    password = PasswordField('Password')
+    submit = SubmitField('Login')
+
+
+
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password')

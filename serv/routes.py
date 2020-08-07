@@ -1,10 +1,10 @@
-from flask import render_template, url_for, flash, redirect, request, send_file, session, request
+from flask import render_template, url_for, flash, redirect, request, send_file, session
  # TODO: from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.exceptions import InternalServerError
-from flask_login import login_user, logout_user, current_user, login_required
+from flask_login import login_user, logout_user, current_user, login_required, user_logged_out
 from serv import app, db, key, bcrypt
 from serv.models import Upload, User
-from serv.forms import UploadFile, LoginForm, DownloadPasswordForm
+from serv.forms import UploadFile, RegisterForm, LoginForm, DownloadPasswordForm
 from serv.encryptDecrypt import encrypt, decrypt
 import secrets, datetime, sys, os, io
 from hurry.filesize import size, si
@@ -127,6 +127,17 @@ def download(downloadToken):
                                  0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
         return redirect(url_for('home'))
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    registerForm = RegisterForm()
+    if registerForm.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(registerForm.password.data)  # TODO: UTF-8 needed?
+        user = User(username=registerForm.username.data, email=registerForm.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash("New user created", 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html', title="Register", form=registerForm)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
