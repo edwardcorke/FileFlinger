@@ -4,16 +4,14 @@
     <div id="uploadBox">
         <h2>Upload Complete</h2>
         <h3>Here are the details</h3><br>
-        Download here: <br><a href="../{{ downloadLink }}">
-        <span id="downloadLink">localhost:5000/{{ downloadLink }}</span></a><button onclick="copy2clipboard()">copy to clipboard</button><br><br>
+        Download here: <br><a href="../{{ uploadMetadata['downloadLink'] }}">
+        <span id="downloadLink">localhost:5000/{{ uploadMetadata['downloadLink'] }}</span></a><button onclick="copy2clipboard()">copy to clipboard</button><br><br>
 
-        Filename: {{ filename }}<br><br>
-        Filesize: {{ filesize }}<br><br>
-        Message: {{ message }}<br><br>
-        Uploader: {{ uploader }}<br><br>
-        Expires on: {{ expirationDatetime }}<br><br>
-<!--        [expires in]-->
-
+        Filename: {{ uploadMetadata['filename'] }}<br><br>
+        Filesize: {{ uploadMetadata['filesize'] }}<br><br>
+        Message: {{ uploadMetadata['message'] }}<br><br>
+        Uploader: {{ uploadMetadata['uploader'] }}<br><br>
+        Expires on: {{ uploadMetadata['expirationDatetime'] }}<br><br>
 
     </div>
 

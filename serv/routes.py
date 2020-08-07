@@ -1,3 +1,5 @@
+import json
+
 from flask import render_template, url_for, flash, redirect, request, send_file, session
  # TODO: from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.exceptions import InternalServerError
@@ -33,11 +35,14 @@ def home():
 
             # Save metadata to session
             # TODO: create JSON?
-            session['downloadLink'] = downloadLink
-            session['filename'] = fileReceived.filename
-            session['uploader'] = uploadForm.email.data
-            session['message'] = uploadForm.message.data
-            session['expirationDatetime'] = expirationDatetime
+            session['uploadMetadata'] = {"downloadLink":downloadLink,
+                                         "filename":fileReceived.filename,
+                                         "uploader":uploadForm.email.data,
+                                         "message":uploadForm.message.data,
+                                         "expirationDatetime":expirationDatetime,
+                                         "filesize":size(session['filesize']),
+                                         "downloadLink":session['downloadLink']}
+
             # TODO: display password on upload thanks page?
 
             return redirect(url_for('uploadThanks'))
@@ -51,8 +56,11 @@ def home():
 @app.route("/upload/thanks")
 def uploadThanks():
     # Return to home if metadata has not been transferred over successfully from the upload page
-    if 'filename' in session:
-        return render_template("uploadThanks.html", downloadLink=session['downloadLink'], filename=session['filename'], uploader=session['uploader'], message=session['message'], filesize=size(session['filesize']), expirationDatetime=session['expirationDatetime'])
+    if 'uploadMetadata' in session:
+        print(session['uploadMetadata'])
+        return render_template("uploadThanks.html",
+                               title="Thanks for uploading",
+                               uploadMetadata=session['uploadMetadata'])
     print("Could not find session variables")  # TODO: log
     return redirect(url_for('home'))
 
