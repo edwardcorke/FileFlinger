@@ -1,5 +1,3 @@
-import json
-
 from flask import render_template, url_for, flash, redirect, request, send_file, session
  # TODO: from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.exceptions import InternalServerError
@@ -10,6 +8,7 @@ from serv.forms import UploadFile, RegisterForm, LoginForm, DownloadPasswordForm
 from serv.encryptDecrypt import encrypt, decrypt
 import secrets, datetime, sys, os, io
 from hurry.filesize import size, si
+from serv import logger
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -57,11 +56,10 @@ def home():
 def uploadThanks():
     # Return to home if metadata has not been transferred over successfully from the upload page
     if 'uploadMetadata' in session:
-        print(session['uploadMetadata'])
         return render_template("uploadThanks.html",
                                title="Thanks for uploading",
                                uploadMetadata=session['uploadMetadata'])
-    print("Could not find session variables")  # TODO: log
+    flash("Could not find session variables")
     return redirect(url_for('home'))
 
 
@@ -128,11 +126,11 @@ def download(downloadToken):
        filename = search.hashname
        fileToSend = open(os.path.join(filepath, filename), "rb")
        fileToSend = decrypt(fileToSend.read(), key)
+       logger.log.info('{} downloaded'.format(filename))
        return send_file(io.BytesIO(fileToSend), attachment_filename=search.filename, as_attachment=True)
     except:
         flash("Server issue - our apologies we cannot locate the file")
-        print("Error: " + str(sys.exc_info()[
-                                 0]) + " for file: \'" + search.filename + "\' (uploaded by " + search.uploaderEmail + ")")  # TODO: log message & raise correct HTTP code
+        logger.log.error("Could not locate file for {}".format(filename))  # TODO: Raise correct HTTP code
         return redirect(url_for('home'))
 
 
@@ -147,6 +145,7 @@ def register():
         user = User(username=registerForm.username.data, email=registerForm.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
+        logger.log.info('Created user- username: {}, email: {}'.format(registerForm.username.data, registerForm.email.data))
         flash("New user created", 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title="Register", form=registerForm)
@@ -164,6 +163,7 @@ def login():
             login_user(user, remember=True)  # TODO: add field to form?
             next_page = request.args.get('next')
             flash('Logged in')
+            logger.log.info('User with id {} logged in'.format(current_user.id))
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login unsuccessful, Please check email and password')
@@ -172,6 +172,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+    logger.log.info('User with id {} logged out'.format(current_user.id))
     logout_user()
     flash('Logged out')
     return redirect(url_for('home'))
@@ -219,6 +220,7 @@ def view_uploads():
     if status:
         db.session.execute("UPDATE Upload SET status = " + status + " WHERE id = " + upload_id)
         db.session.commit()
+        logger.log.info('User with id {} changed the availability of upload with id {} to {}'.format(current_user.id, upload_id, status))
 
     userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
     return render_template('view_uploads.html', data=userData, search=search)
@@ -237,6 +239,7 @@ def view_user_account(userID):
     if status:
         db.session.execute("UPDATE Upload SET status = " + status + " WHERE id = " + upload_id)
         db.session.commit()
+        logger.log.info('User with id {} changed the availability of upload with id {} to {}'.format(current_user.id, upload_id, status))
 
     # Updating permission level of an account
     permLevel = request.args.get('permLevel')
@@ -251,6 +254,7 @@ def view_user_account(userID):
         else:
             db.session.execute("UPDATE User SET permLevel = " + str(permLevel) + " WHERE id = " + userID)
             db.session.commit()
+            logger.log.info('User with id {} changed the permission level of user with id {} to {}'.format(current_user.id, userID, permLevel))
 
 
     # Selecting user details
@@ -322,6 +326,8 @@ def saveUpload(fileReceived, uploadForm, expirationDatetime):
                             password=hashedPassword)
     db.session.add(uploadInstance)
     db.session.commit()
+
+    logger.log.info('Upload saved [filename: {}, Uploader: {}, Hashname: {}, Filesize: {}]'.format(fileReceived.filename, uploadForm.email.data, hashname, filesize))
 
     filename = app.config['UPLOAD_FOLDER'] + hashname
 

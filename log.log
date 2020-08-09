@@ -1,0 +1,15 @@
+2020-08-09 21:32:27,222:serv.logger:User with id 1 logged in
+2020-08-09 21:32:46,760:serv.logger:Upload saved [filename: demonstrationScreenshots (1).png, Uploader: eddycorke@gmail.com, Hashname: 167b53e47067, Filesize: 1443673]
+2020-08-09 21:32:59,608:serv.logger:ddd364e051ba downloaded
+2020-08-09 21:33:25,076:serv.logger:User with id 1 changed the permission level of user with id 2 to 2
+2020-08-09 21:33:36,753:serv.logger:User with id 1 changed the permission level of user with id 2 to 1
+2020-08-09 21:33:45,593:serv.logger:User with id 1 changed the availability of upload with id 16 to 0
+2020-08-09 21:35:36,602:serv.logger:User with id 1 changed the availability of upload with id 1 to 1
+2020-08-09 21:35:46,380:serv.logger:User with id 1 changed the availability of upload with id 1 to 1
+2020-08-09 21:35:55,021:serv.logger:User with id 1 changed the availability of upload with id 1 to 1
+2020-08-09 21:35:56,790:serv.logger:User with id 1 changed the availability of upload with id 3 to 1
+2020-08-09 21:36:14,602:serv.logger:User with id 1 changed the availability of upload with id 3 to 1
+2020-08-09 21:36:21,995:serv.logger:User with id 1 changed the availability of upload with id 16 to 1
+2020-08-09 21:37:10,129:serv.logger:Could not locate file for 167b53e47067
+2020-08-09 21:37:29,475:serv.logger:User with id 1 logged out
+2020-08-09 21:38:02,790:serv.logger:Created user- username: cosrkee, email: e.corkes@lancaster.ac.uk

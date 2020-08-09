@@ -1,3 +1,4 @@
 uploads/
 serv/__pycache__
-*.db
+.db
+.log
