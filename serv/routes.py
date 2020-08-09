@@ -160,6 +160,9 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
+            if user.permLevel == config.permissionLevels['suspended']:
+                flash('Account suspended')
+                return redirect(url_for('login'))
             login_user(user, remember=True)  # TODO: add field to form?
             next_page = request.args.get('next')
             flash('Logged in')
@@ -249,7 +252,7 @@ def view_user_account(userID):
             flash("You cannot change your own permission level")
         elif permLevel > int(current_user.permLevel):
             flash("Cannot raise a user's permission level higher that yourself")
-        elif permLevel <= 0:
+        elif permLevel < 0:
             flash("Invalid permission level")
         else:
             db.session.execute("UPDATE User SET permLevel = " + str(permLevel) + " WHERE id = " + userID)

@@ -19,7 +19,7 @@
                 <td>
                     {% if current_user.id != userData[0] %}
                         <form action="">
-                            <input type="number" name="permLevel" min="1" max="{{ current_user.permLevel }}" placeholder="{{userData[3]}}">
+                            <input type="number" name="permLevel" min="0" max="{{ current_user.permLevel }}" placeholder="{{userData[3]}}">
                             <input type="submit" value="Update">
                         </form>
                     {% else %}
