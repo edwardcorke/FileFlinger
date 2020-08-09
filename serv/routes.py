@@ -8,7 +8,7 @@ from serv.forms import UploadFile, RegisterForm, LoginForm, DownloadPasswordForm
 from serv.encryptDecrypt import encrypt, decrypt
 import secrets, datetime, sys, os, io
 from hurry.filesize import size, si
-from serv import logger
+from serv import logger, config
 
 
 @app.route("/",  methods=['GET', 'POST'])
@@ -181,7 +181,7 @@ def logout():
 @app.route('/admin_portal')
 @login_required
 def admin_portal():
-    if current_user.permLevel < 2:  # TODO: change number to config alias
+    if current_user.permLevel < config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
@@ -193,7 +193,7 @@ def admin_portal():
 @app.route('/admin_portal/users')
 @login_required
 def view_users():
-    if current_user.permLevel < 2:  # TODO: change number to config alias
+    if current_user.permLevel < config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
@@ -204,7 +204,7 @@ def view_users():
 @app.route('/admin_portal/uploads')
 @login_required
 def view_uploads():
-    if current_user.permLevel < 2:  # TODO: change number to config alias
+    if current_user.permLevel < config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
@@ -229,7 +229,7 @@ def view_uploads():
 @app.route('/admin_portal/users/<userID>')
 @login_required
 def view_user_account(userID):
-    if current_user.permLevel < 2:  # TODO: change number to config alias
+    if current_user.permLevel < config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('home'))
 
@@ -279,6 +279,7 @@ def page_not_found(e):
 def request_entity_too_large(error):
     return 'File Too Large', 413
 
+
 @app.errorhandler(InternalServerError)
 def handle_500(e):
     original = getattr(e, "original_exception", None)
@@ -290,11 +291,6 @@ def handle_500(e):
     # wrapped unhandled error
     return render_template("500_unhandled.html", e=original), 500
 
-
-
-
-
-#####  ADDITIONAL FUNCTIONS  #####
 
 def saveUpload(fileReceived, uploadForm, expirationDatetime):
 

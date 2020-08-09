@@ -5,6 +5,7 @@ log.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
 
+# TODO: create different loggers for user and upload messages
 file_handler = logging.FileHandler('log.log')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
