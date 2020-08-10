@@ -1,5 +1,9 @@
 uploads/
 serv/__pycache__
+serv/main/__pycache__
+serv/uploads/__pycache__
+serv/users/__pycache__
+serv/errors/__pycache__
 .idea/
 
 .db
