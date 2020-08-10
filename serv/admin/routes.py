@@ -17,7 +17,7 @@ def admin_portal():
 
     data = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
     datab = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
-    return render_template('admin_portal.html', data=data, datab=datab)
+    return render_template('admin/admin_portal.html', data=data, datab=datab)
 
 
 @admin.route('/admin_portal/users/<userID>')
@@ -60,7 +60,7 @@ def view_user_account(userID):
 
     # Searching for any uploads by the user
     uploads = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, message, status FROM Upload WHERE uploaderEmail = \"" + user[2] + "\"")
-    return render_template('view_user_account.html', title="User Page...", userData=user, uploads=uploads)
+    return render_template('admin/view_user_account.html', title="User Page...", userData=user, uploads=uploads)
 
 
 @admin.route('/admin_portal/users')
@@ -71,7 +71,7 @@ def view_users():
         return redirect(url_for('uploads.home'))
 
     userData = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
-    return render_template('view_users.html', data=userData)
+    return render_template('admin/view_users.html', data=userData)
 
 
 @admin.route('/admin_portal/uploads')
@@ -96,4 +96,4 @@ def view_uploads():
         logger.log.info('User with id {} changed the availability of upload with id {} to {}'.format(current_user.id, upload_id, status))
 
     userData = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
-    return render_template('view_uploads.html', data=userData, search=search)
+    return render_template('admin/view_uploads.html', data=userData, search=search)

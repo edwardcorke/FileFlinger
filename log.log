@@ -36,3 +36,8 @@
 2020-08-10 02:17:55,849:serv.logger:User with id 3 logged out
 2020-08-10 02:36:03,250:serv.logger:User with id 1 logged in
 2020-08-10 02:36:03,839:serv.logger:User with id 1 changed the availability of upload with id 1 to 0
+2020-08-10 12:33:50,006:serv.logger:User with id 1 logged out
+2020-08-10 12:35:47,354:serv.logger:User with id 1 logged in
+2020-08-10 12:37:59,667:serv.logger:Upload saved [filename: dataCapture.m, Uploader: eddycorke@gmail.com, Hashname: 9713fbbc4f90, Filesize: 5232]
+2020-08-10 12:38:09,427:serv.logger:Upload saved [filename: finalCNN.mat, Uploader: eddycorke@gmail.com, Hashname: ea4ea4732bc1, Filesize: 691403]
+2020-08-10 12:38:19,409:serv.logger:ea4ea4732bc1 downloaded

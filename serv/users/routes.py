@@ -25,7 +25,7 @@ def register():
         logger.log.info('Created user- username: {}, email: {}'.format(registerForm.username.data, registerForm.email.data))
         flash("New user created", 'success')
         return redirect(url_for('uploads.login'))
-    return render_template('register.html', title="Register", form=registerForm)
+    return render_template('users/register.html', title="Register", form=registerForm)
 
 
 @users.route('/login', methods=['GET', 'POST'])
@@ -47,7 +47,7 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('uploads.home'))
         else:
             flash('Login unsuccessful, Please check email and password')
-    return render_template('login.html', form=form)
+    return render_template('users/login.html', form=form)
 
 
 @users.route('/logout')
