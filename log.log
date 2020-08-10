@@ -49,3 +49,8 @@
 2020-08-10 12:52:33,033:serv.logger:User with id 1 logged in
 2020-08-10 13:06:40,054:serv.logger:User with id 1 changed the availability of upload with id 2 to 0
 2020-08-10 13:06:40,884:serv.logger:User with id 1 changed the availability of upload with id 3 to 0
+2020-08-10 13:21:24,769:serv.logger:User with id 1 changed the availability of upload with id 3 to 0
+2020-08-10 13:21:29,127:serv.logger:User with id 1 changed the availability of upload with id 3 to 0
+2020-08-10 13:21:35,335:serv.logger:User with id 1 changed the availability of upload with id 3 to 0
+2020-08-10 13:24:28,532:serv.logger:User with id 1 logged out
+2020-08-10 13:33:07,963:serv.logger:User with id 1 logged in

@@ -4,14 +4,15 @@
     <h2>View all uploads</h2>
     <a href="{{ url_for('admin.admin_portal') }}"><button>back</button></a><br><br>
 
-    Search by email: <br>
+    <h4>Search by email: </h4>
     <form action="uploads">
         <input type="text" name="email">
         <input type="submit" value="Search">
     </form>
     <br><br>
 
-    <table>
+    <table class="admin_portal_table">
+        <tr>
             <th>ID</th>
             <th>filename</th>
             <th>hashname</th>
@@ -20,41 +21,44 @@
             <th>expiry date</th>
             <th>message</th>
             <th>status code</th>
-            {% for item in search %}
-            <tr>
-                <td>{{item[0]}}</td>
-                <td>{{item[1]}}</td>
-                <td>{{item[2]}}</td>
-                <td>{{item[3]}}</td>
-                <td>{{item[4]}}</td>
-                <td>{{item[5]}}</td>
-                <td>{{item[6]}}</td>
-                <td>
-                    {% if item[7] == 0 %}
-                        unavailable:
-                        <a href="uploads?status=1&upload_id={{item[0]}}"><button>make available</button></a>
-                    {% else %}
-                        available:
-                        <a href="uploads?status=0&upload_id={{item[0]}}"><button>make unavailable</button></a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        </tr>
+        {% for item in search %}
+        <tr>
+            <td>{{item[0]}}</td>
+            <td>{{item[1]}}</td>
+            <td>{{item[2]}}</td>
+            <td>{{item[3]}}</td>
+            <td>{{item[4]}}</td>
+            <td>{{item[5]}}</td>
+            <td>{{item[6]}}</td>
+            <td>
+                {% if item[7] == 0 %}
+                    unavailable:
+                    <a href="uploads?status=1&upload_id={{item[0]}}"><button>make available</button></a>
+                {% else %}
+                    available:
+                    <a href="uploads?status=0&upload_id={{item[0]}}"><button>make unavailable</button></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 
     <br><br>
     Uploads:<br><br>
-    <table>
-        <th>ID</th>
-        <th>filename</th>
-        <th>hashname</th>
-        <th>filesize</th>
-        <th>date uploaded</th>
-        <th>expiry date</th>
-        <th>uploader</th>
-        <th>message</th>
-        <th>status code</th>
-        {% for item in data %}
+    <table class="admin_portal_table">
+        <tr>
+            <th>ID</th>
+            <th>filename</th>
+            <th>hashname</th>
+            <th>filesize</th>
+            <th>date uploaded</th>
+            <th>expiry date</th>
+            <th>uploader</th>
+            <th>message</th>
+            <th>status code</th>
+            {% for item in data %}
+        </tr>
         <tr>
             <td>{{item[0]}}</td>
             <td>{{item[1]}}</td>

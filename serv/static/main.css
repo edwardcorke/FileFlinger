@@ -9,23 +9,39 @@ a {
 }
 
 h1, h2 {
+    display: inline-block;
+}
+
+h4 {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+#titleBar {
     margin-left: 50px;
     display: inline-block;
 }
 
-
 /* Move (for admin portal table) */
-table {
+.admin_portal_table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
 }
 
-table, th, td {
-  border: 1px solid black;
+.admin_portal_table td, .admin_portal_table th {
+  border: 1px solid #ddd;
+  padding: 8px;
 }
 
-th, td {
-  padding: 15px;
+.admin_portal_table tr:nth-child(even){background-color: #f2f2f2;}
+
+.admin_portal_table tr:hover {background-color: #ddd;}
+
+.admin_portal_table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
   text-align: left;
+  background-color: #2fb5ba;
+  color: white;
 }
 /* end of comment section */
 
@@ -42,7 +58,6 @@ th, td {
     -moz-box-shadow:    4px 4px 4px 4px #DEDEDE;  /* Firefox 3.5 - 3.6 */
     box-shadow:         4px 4px 4px 4px #DEDEDE;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
     margin-top: 50px;
-    margin-left: 50px;
     padding: 20px;
 }
 
@@ -115,8 +130,16 @@ th, td {
 }
 
 #loginForm {
-    height: 130px;
+    height: 190px;
     width: 250px;
+}
+
+#registerForm {
+    height: 205px;
+    width: 250px;
+}
+
+#loginForm, #registerForm {
     background-color: #FFFFFF;
     border-radius: 8px;
     /* border: black 1px solid; */
@@ -124,7 +147,6 @@ th, td {
     -moz-box-shadow:    4px 4px 4px 4px #DEDEDE;  /* Firefox 3.5 - 3.6 */
     box-shadow:         4px 4px 4px 4px #DEDEDE;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
     margin-top: 25px;
-    margin-left: 50px;
     padding: 20px;
 }
 
@@ -138,6 +160,9 @@ th, td {
     -moz-box-shadow:    4px 4px 4px 4px #DEDEDE;  /* Firefox 3.5 - 3.6 */
     box-shadow:         4px 4px 4px 4px #DEDEDE;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
     margin-top: 25px;
-    margin-left: 50px;
     padding: 20px;
+}
+
+#content {
+    margin-left: 50px;
 }
