@@ -14,3 +14,7 @@ class Config:
     permissionLevels['admin'] = 2
     permissionLevels['manager'] = 3
     permissionLevels['owner'] = 4
+
+    availabilityNames = dict()
+    availabilityNames['unavailable'] = 0
+    availabilityNames['available'] = 1
