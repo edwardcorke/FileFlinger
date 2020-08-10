@@ -1,7 +1,7 @@
 import threading, time, datetime, os
-from serv import db, app
+from serv import db
 from serv.models import Upload
-from sqlalchemy import and_
+from flask import current_app
 
 def runFileCleanup():
     print("Initiating file cleanup to remove expired uploads")
@@ -23,7 +23,7 @@ def cleanup_thread_function():
                     record.status = 0
                     db.session.commit()
 
-                    fileToDelete = app.config['UPLOAD_FOLDER'] + record.hashname
+                    fileToDelete = current_app.config['UPLOAD_FOLDER'] + record.hashname
                     os.remove(fileToDelete)
                     # TODO: log deletion
                 except:

@@ -2,24 +2,35 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
-from serv.encryptDecrypt import load_key
-import pathlib
+from serv.config import Config
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'd8f9c93ac18d163fcba715854fea0b41'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['UPLOAD_FOLDER'] = str(pathlib.Path(__file__).parent.absolute()) + '\\static\\uploads\\'
-app.config['EXPIRATION_TIME_DAYS'] = 30
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024 * 1024  # 2GB upload limit
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+login_manager.login_view = 'users.login'
 login_manager.login_message = "You must be logged in to view this page"
-key = load_key()
-
-from serv import routes
-from serv import fileCleanup
 
 
-# fileCleanup.runFileCleanup()
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+
+    from serv.main.routes import main
+    from serv.users.routes import users
+    from serv.uploads.routes import uploads
+    from serv.admin.routes import admin
+    app.register_blueprint(main)
+    app.register_blueprint(users)
+    app.register_blueprint(uploads)
+    app.register_blueprint(admin)
+
+    return app
+
+
+# from serv.errors.handler import errors
+
