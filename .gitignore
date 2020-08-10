@@ -1,4 +1,5 @@
 uploads/
+__pycache__
 serv/__pycache__
 serv/main/__pycache__
 serv/uploads/__pycache__
