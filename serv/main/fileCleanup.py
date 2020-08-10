@@ -1,5 +1,5 @@
 import threading, time, datetime, os
-from serv import db
+from serv import db, logger
 from serv.models import Upload
 from flask import current_app
 
@@ -25,9 +25,9 @@ def cleanup_thread_function():
 
                     fileToDelete = current_app.config['UPLOAD_FOLDER'] + record.hashname
                     os.remove(fileToDelete)
-                    # TODO: log deletion
+                    logger.log.info('{} deleted from storage'.format(record.hashname))
                 except:
-                    # TODO: log 'could not remove...'
+                    logger.log.error('Attempted to remove {} but failed'.format(record.hashname))
                     pass
         # wait
         time.sleep(1800)  # 30minutes (3600 seconds = 1 hour)

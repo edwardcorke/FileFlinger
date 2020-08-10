@@ -1,11 +1,10 @@
 from flask import Blueprint
 from flask import render_template, url_for, flash, redirect, request
-#  # TODO: from werkzeug.exceptions import RequestEntityTooLarge
-from flask_login import login_user, logout_user, current_user, login_required
+from flask_login import login_user, logout_user, current_user
 from serv import db, bcrypt, Config
 from serv.models import User
 from serv.users.forms import RegisterForm, LoginForm
-from serv import logger, config
+from serv import logger
 
 
 users = Blueprint('users', __name__)
@@ -18,7 +17,7 @@ def register():
 
     registerForm = RegisterForm()
     if registerForm.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(registerForm.password.data)  # TODO: UTF-8 needed?
+        hashed_password = bcrypt.generate_password_hash(registerForm.password.data)
         user = User(username=registerForm.username.data, email=registerForm.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
@@ -40,7 +39,7 @@ def login():
             if user.permLevel == Config.permissionLevels['suspended']:
                 flash('Account suspended')
                 return redirect(url_for('users.login'))
-            login_user(user, remember=True)  # TODO: add field to form?
+            login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             flash('Logged in')
             logger.log.info('User with id {} logged in'.format(current_user.id))

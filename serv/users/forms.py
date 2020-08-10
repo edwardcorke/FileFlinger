@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, ValidationError
 from serv.models import User
 import re as regex
@@ -49,9 +49,5 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password')
+    remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
-
-    # def search_user_by_email(self, email):
-    #     user = User.query.filter_by(email=email.data).first()
-    #     if user is None:
-    #         raise ValidationError('No user found with that email')
