@@ -24,13 +24,11 @@ def create_app(config_class=Config):
     from serv.users.routes import users
     from serv.uploads.routes import uploads
     from serv.admin.routes import admin
+    from serv.errors.handlers import errors
     app.register_blueprint(main)
     app.register_blueprint(users)
     app.register_blueprint(uploads)
     app.register_blueprint(admin)
+    app.register_blueprint(errors)
 
     return app
-
-
-# from serv.errors.handler import errors
-

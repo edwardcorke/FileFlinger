@@ -1,4 +1,6 @@
 uploads/
 serv/__pycache__
+.idea/
+
 .db
 .log

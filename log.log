@@ -28,3 +28,11 @@
 2020-08-10 01:32:43,264:serv.logger:Could not locate file for 77547aaf0392
 2020-08-10 01:34:52,808:serv.logger:77547aaf0392 downloaded
 2020-08-10 01:35:06,092:serv.logger:User with id 1 changed the availability of upload with id 1 to 0
+2020-08-10 02:07:48,967:serv.logger:Upload saved [filename: dataCapture.m, Uploader: eddycorke@gmail.com, Hashname: 27a6440f4798, Filesize: 5232]
+2020-08-10 02:07:51,728:serv.logger:27a6440f4798 downloaded
+2020-08-10 02:07:54,356:serv.logger:User with id 1 logged out
+2020-08-10 02:17:40,217:serv.logger:User with id 3 logged in
+2020-08-10 02:17:51,711:serv.logger:User with id 3 changed the availability of upload with id 1 to 1
+2020-08-10 02:17:55,849:serv.logger:User with id 3 logged out
+2020-08-10 02:36:03,250:serv.logger:User with id 1 logged in
+2020-08-10 02:36:03,839:serv.logger:User with id 1 changed the availability of upload with id 1 to 0
