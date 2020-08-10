@@ -10,10 +10,12 @@ admin = Blueprint('admin', __name__)
 @admin.route('/admin_portal')
 @login_required
 def admin_portal():
+    # Must be at least an admin to view this page
     if current_user.permLevel < Config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('uploads.home'))
 
+    # SELECT and display all users and uploads
     data = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
     datab = db.session.execute("SELECT id, filename, hashname, filesize, datetime, expirationDatetime, uploaderEmail, message, status FROM Upload").fetchall()
     return render_template('admin/admin_portal.html', data=data, datab=datab)
@@ -22,6 +24,7 @@ def admin_portal():
 @admin.route('/admin_portal/users/<userID>')
 @login_required
 def view_user_account(userID):
+    # Must be at least an admin to view this page
     if current_user.permLevel < Config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('uploads.home'))
@@ -49,7 +52,6 @@ def view_user_account(userID):
             db.session.commit()
             logger.log.info('User with id {} changed the permission level of user with id {} to {}'.format(current_user.id, userID, permLevel))
 
-
     # Selecting user details
     user = db.session.execute("SELECT id, username, email, permLevel FROM User WHERE id = " + userID).fetchone()
 
@@ -65,10 +67,12 @@ def view_user_account(userID):
 @admin.route('/admin_portal/users')
 @login_required
 def view_users():
+    # Must be at least an admin to view this page
     if current_user.permLevel < Config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('uploads.home'))
 
+    # SELECT and display all users
     userData = db.session.execute("SELECT id, username, email, permLevel FROM User").fetchall()
     return render_template('admin/view_users.html', data=userData)
 
@@ -76,6 +80,7 @@ def view_users():
 @admin.route('/admin_portal/uploads')
 @login_required
 def view_uploads():
+    # Must be at least an admin to view this page
     if current_user.permLevel < Config.permissionLevels['admin']:
         flash("Access to the admin portal area is restricted")
         return redirect(url_for('uploads.home'))

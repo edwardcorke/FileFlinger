@@ -12,6 +12,7 @@ users = Blueprint('users', __name__)
 
 @users.route('/register', methods=['GET', 'POST'])
 def register():
+    # Can't be logged in to view register page
     if current_user.is_authenticated:
         return redirect(url_for('uploads.home'))
 
@@ -29,7 +30,7 @@ def register():
 
 @users.route('/login', methods=['GET', 'POST'])
 def login():
-    # Make sure login page can only be accessed when the user is not logged in
+    # Login page can only be accessed when the user is not logged in
     if current_user.is_authenticated:
         return redirect(url_for('uploads.home'))
     form = LoginForm()
